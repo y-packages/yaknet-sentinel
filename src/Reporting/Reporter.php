@@ -4,6 +4,9 @@ namespace YakNet\Sentinel\Reporting;
 
 class Reporter
 {
+    /**
+     * @param array<string, mixed>|null $analysis
+     */
     public function logToFile(\Throwable $e, ?array $analysis): void
     {
         $data = [

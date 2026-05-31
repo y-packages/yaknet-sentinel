@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Shield
 {
+    /** @var array<string, string> */
     private array $patterns = [
         'sql_injection' => '/(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|ALTER|--|\#|\/\*)/i',
         'xss' => '/(<script|javascript:|onerror=|onload=)/i',
@@ -22,6 +23,9 @@ class Shield
         $this->scanArray($request->cookies->all(), 'COOKIE');
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     private function scanArray(array $data, string $source): void
     {
         foreach ($data as $key => $value) {
@@ -39,6 +43,9 @@ class Shield
         }
     }
 
+    /**
+     * @param mixed $value
+     */
     private function logAttack(string $type, string $key, $value, string $source): void
     {
         // Log to file/database

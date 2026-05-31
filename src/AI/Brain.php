@@ -15,6 +15,9 @@ class Brain
         }
     }
 
+    /**
+     * @return array{explanation: string, fix: string, severity: string}|null
+     */
     public function analyzeException(\Throwable $e): ?array
     {
         if (!$this->client) return null;

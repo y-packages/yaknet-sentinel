@@ -12,8 +12,12 @@ class Sentinel
     private Brain $brain;
     private Shield $shield;
     private Broadcaster $broadcaster;
+    /** @var array<string, mixed> */
     private array $config;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     private function __construct(array $config = [])
     {
         $this->config = $config;
@@ -22,6 +26,9 @@ class Sentinel
         $this->broadcaster = new Broadcaster($config['notifications'] ?? []);
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public static function register(array $config = []): self
     {
         if (self::$instance === null) {
@@ -74,6 +81,9 @@ class Sentinel
         }
     }
 
+    /**
+     * @param array<string, mixed>|null $analysis
+     */
     private function renderErrorPage(\Throwable $e, ?array $analysis): void
     {
         // For CLI, output text

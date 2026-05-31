@@ -4,8 +4,12 @@ namespace YakNet\Sentinel\Notification;
 
 class Broadcaster
 {
+    /** @var array<int, NotificationInterface|TelegramAdapter> */
     private array $adapters = [];
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config)
     {
         if (isset($config['telegram'])) {
@@ -14,6 +18,9 @@ class Broadcaster
         // Other adapters like Mail, Slack can be added here
     }
 
+    /**
+     * @param array<string, mixed>|null $analysis
+     */
     public function alert(\Throwable $e, ?array $analysis): void
     {
         foreach ($this->adapters as $adapter) {
@@ -24,8 +31,14 @@ class Broadcaster
 
 class TelegramAdapter
 {
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(private array $config) {}
 
+    /**
+     * @param array<string, mixed>|null $analysis
+     */
     public function send(\Throwable $e, ?array $analysis): void
     {
         $token = $this->config['token'] ?? null;
