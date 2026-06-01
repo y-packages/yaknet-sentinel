@@ -34,10 +34,13 @@ class Shield
                 continue;
             }
 
-            foreach ($this->patterns as $type => $pattern) {
-                if (preg_match($pattern, (string)$value)) {
-                    $this->logAttack($type, $key, $value, $source);
-                    $this->blockRequest($type);
+            if (is_scalar($value)) {
+                $strValue = (string)$value;
+                foreach ($this->patterns as $type => $pattern) {
+                    if (preg_match($pattern, $strValue)) {
+                        $this->logAttack($type, $key, $value, $source);
+                        $this->blockRequest($type);
+                    }
                 }
             }
         }

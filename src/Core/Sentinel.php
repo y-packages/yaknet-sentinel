@@ -21,9 +21,14 @@ class Sentinel
     private function __construct(array $config = [])
     {
         $this->config = $config;
-        $this->brain = new Brain($config['gemini_api_key'] ?? null);
+        
+        $apiKey = $config['gemini_api_key'] ?? null;
+        $this->brain = new Brain(is_string($apiKey) ? $apiKey : null);
+        
         $this->shield = new Shield();
-        $this->broadcaster = new Broadcaster($config['notifications'] ?? []);
+        
+        $notifications = $config['notifications'] ?? [];
+        $this->broadcaster = new Broadcaster(is_array($notifications) ? $notifications : []);
     }
 
     /**
@@ -91,6 +96,23 @@ class Sentinel
             echo "\n[Sentinel Alert] " . $e->getMessage() . "\n";
             if ($analysis) echo "AI Fix: " . $analysis['fix'] . "\n";
             return;
+        }
+
+        // Check if YakNet Divan (Poetic Error Handler) is available and active
+        if (class_exists('\\YakNet\\Divan\\Core\\Divan')) {
+            $envVal = getenv('POETIC_ERRORS') ?: ($_ENV['POETIC_ERRORS'] ?? null);
+            if ($envVal === null && isset($_SERVER['POETIC_ERRORS'])) {
+                $envVal = $_SERVER['POETIC_ERRORS'];
+            }
+            $divanActive = ($envVal !== null) ? filter_var($envVal, FILTER_VALIDATE_BOOLEAN) : true;
+
+            if ($divanActive) {
+                $divan = \YakNet\Divan\Core\Divan::register([
+                    'gemini_api_key' => $this->config['gemini_api_key'] ?? null
+                ]);
+                $divan->render($e);
+                exit;
+            }
         }
 
         // For Web, output a beautiful UI

@@ -12,8 +12,9 @@ class Broadcaster
      */
     public function __construct(array $config)
     {
-        if (isset($config['telegram'])) {
-            $this->adapters[] = new TelegramAdapter($config['telegram']);
+        $telegram = $config['telegram'] ?? null;
+        if (is_array($telegram)) {
+            $this->adapters[] = new TelegramAdapter($telegram);
         }
         // Other adapters like Mail, Slack can be added here
     }
@@ -44,7 +45,7 @@ class TelegramAdapter
         $token = $this->config['token'] ?? null;
         $chatId = $this->config['chat_id'] ?? null;
 
-        if (!$token || !$chatId) return;
+        if (!is_string($token) || !is_string($chatId)) return;
 
         $message = "🚨 *YakNet Sentinel Alert*\n\n";
         $message .= "*Error:* " . $e->getMessage() . "\n";
@@ -55,6 +56,6 @@ class TelegramAdapter
         }
 
         $url = "https://api.telegram.org/bot{$token}/sendMessage";
-        @file_get_contents($url . "?chat_id={$chatId}&text=" . urlencode($message) . "&parse_mode=Markdown");
+        @file_get_contents($url . "?chat_id=" . urlencode($chatId) . "&text=" . urlencode($message) . "&parse_mode=Markdown");
     }
 }
